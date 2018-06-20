@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
         if (isLogged){
             User u = db.getUserByLogin(login);
             Intent intent = new Intent(this, HomeActivity.class);
-            intent.put
+            intent.putExtra("login", u.getLogin());
             startActivity(intent);
         }
         else{
