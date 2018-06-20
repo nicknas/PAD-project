@@ -1,4 +1,4 @@
-package com.example.nick.booknow.data;
+package com.booknow.data;
 
 import android.content.ContentValues;
 import android.content.Context;

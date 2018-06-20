@@ -1,4 +1,4 @@
-package com.example.nick.booknow;
+package com.booknow;
 
 public class BookingItems {
     public String missionName;

@@ -1,4 +1,4 @@
-package com.example.nick.booknow;
+package com.booknow;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;

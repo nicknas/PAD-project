@@ -1,4 +1,4 @@
-package com.example.nick.booknow;
+package com.booknow;
 
 import org.junit.Test;
 
