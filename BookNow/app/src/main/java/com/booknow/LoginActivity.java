@@ -9,8 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
-import com.example.nick.booknow.data.User;
-import com.example.nick.booknow.data.UserDbHelper;
+import com.booknow.data.User;
+import com.booknow.data.DbHelper;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -23,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginButtonClick(View view){
         String login = ((EditText)findViewById(R.id.user_text)).getText().toString();
         String password = ((EditText)findViewById(R.id.password_text)).getText().toString();
-        UserDbHelper db = new UserDbHelper(this);
+        DbHelper db = new DbHelper(this);
         boolean isLogged = db.isUserLogged(login, password);
         if (isLogged){
             User u = db.getUserByLogin(login);

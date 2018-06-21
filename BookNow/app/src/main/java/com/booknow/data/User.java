@@ -1,11 +1,13 @@
 package com.booknow.data;
 
+import java.io.Serializable;
+
 /**
  *
  * Entidad Usuario
  *
  */
-public class User {
+public class User implements Serializable{
     private int id;
     private String login;
     private int telefono;
