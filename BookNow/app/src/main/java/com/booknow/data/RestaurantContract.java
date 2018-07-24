@@ -11,7 +11,6 @@ public class RestaurantContract {
         public static final String CHEF = "CHEF";
         public static final String HORARIO_APERTURA = "HORARIO_APERTURA";
         public static final String HORARIO_CIERRE = "HORARIO_CIERRE";
-        public static final String COMENSALES_DISPONIBLES = "COMENSALES_DISPONIBLES";
     }
 
 }

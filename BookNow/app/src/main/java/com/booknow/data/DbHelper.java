@@ -42,8 +42,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 + RestaurantContract.RestaurantEntry.DIRECCION + " TEXT NOT NULL,"
                 + RestaurantContract.RestaurantEntry.CHEF + " TEXT,"
                 + RestaurantContract.RestaurantEntry.HORARIO_APERTURA + " TEXT NOT NULL,"
-                + RestaurantContract.RestaurantEntry.HORARIO_CIERRE + " TEXT NOT NULL,"
-                + RestaurantContract.RestaurantEntry.COMENSALES_DISPONIBLES + "INTEGER NOT NULL"
+                + RestaurantContract.RestaurantEntry.HORARIO_CIERRE + " TEXT NOT NULL"
                 + " )");
         values.put(RestaurantContract.RestaurantEntry.NAME, "El Bulli");
         values.put(RestaurantContract.RestaurantEntry.INAUGURACION, "1962-01-01");
@@ -51,7 +50,6 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put(RestaurantContract.RestaurantEntry.CHEF, "Ferran Adrià");
         values.put(RestaurantContract.RestaurantEntry.HORARIO_APERTURA, "13:00");
         values.put(RestaurantContract.RestaurantEntry.HORARIO_CIERRE, "23:45");
-        values.put(RestaurantContract.RestaurantEntry.COMENSALES_DISPONIBLES, 30);
         db.insert(RestaurantContract.RestaurantEntry.TABLE_NAME, null, values);
     }
 
@@ -114,8 +112,7 @@ public class DbHelper extends SQLiteOpenHelper {
             }
             String direccion = c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.DIRECCION));
             String chef = c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.CHEF));
-            int comensales = c.getInt(c.getColumnIndex(RestaurantContract.RestaurantEntry.COMENSALES_DISPONIBLES));
-            Restaurant r = new Restaurant(name, inauguracion, c.getInt(c.getColumnIndex(RestaurantContract.RestaurantEntry._ID)), direccion, chef, horarioApertura, horarioCierre, comensales);
+            Restaurant r = new Restaurant(name, inauguracion, c.getInt(c.getColumnIndex(RestaurantContract.RestaurantEntry._ID)), direccion, chef, horarioApertura, horarioCierre);
             return r;
         }
         else {
