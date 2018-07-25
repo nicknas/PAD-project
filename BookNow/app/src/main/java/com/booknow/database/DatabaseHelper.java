@@ -1,4 +1,4 @@
-package com.booknow.data;
+package com.booknow.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,16 +6,22 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.booknow.database.model.User;
+import com.booknow.database.model.HoursRestaurantContract;
+import com.booknow.database.model.Restaurant;
+import com.booknow.database.model.RestaurantContract;
+import com.booknow.database.model.UserContract;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class DbHelper extends SQLiteOpenHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "BookNow.db";
+    private static final int DATABASE_VERSION = 2;
+    private static final String DATABASE_NAME = "BookNow.db";
 
-    public DbHelper(Context context){
+    public DatabaseHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -26,7 +32,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 + UserContract.UserEntry.LOGIN + " TEXT NOT NULL UNIQUE,"
                 + UserContract.UserEntry.TELEFONO + " INTEGER,"
                 + UserContract.UserEntry.PASSWORD + " TEXT NOT NULL,"
-                + UserContract.UserEntry.EMAIL + " TEXT NOT NULL UNIQUE" + " )");
+                + UserContract.UserEntry.EMAIL + " TEXT NOT NULL UNIQUE" + " )"
+        );
 
         ContentValues values = new ContentValues();
         values.put(UserContract.UserEntry.LOGIN, "nick");
@@ -43,14 +50,25 @@ public class DbHelper extends SQLiteOpenHelper {
                 + RestaurantContract.RestaurantEntry.CHEF + " TEXT,"
                 + RestaurantContract.RestaurantEntry.HORARIO_APERTURA + " TEXT NOT NULL,"
                 + RestaurantContract.RestaurantEntry.HORARIO_CIERRE + " TEXT NOT NULL"
-                + " )");
+                + " )"
+        );
         values.put(RestaurantContract.RestaurantEntry.NAME, "El Bulli");
-        values.put(RestaurantContract.RestaurantEntry.INAUGURACION, "1962-01-01");
+        values.put(RestaurantContract.RestaurantEntry.INAUGURACION, "01-01-1962");
         values.put(RestaurantContract.RestaurantEntry.DIRECCION, "Ctra. de la Roca, s/n, 17480 Roses, Girona");
         values.put(RestaurantContract.RestaurantEntry.CHEF, "Ferran Adrià");
         values.put(RestaurantContract.RestaurantEntry.HORARIO_APERTURA, "13:00");
         values.put(RestaurantContract.RestaurantEntry.HORARIO_CIERRE, "23:45");
         db.insert(RestaurantContract.RestaurantEntry.TABLE_NAME, null, values);
+        values.clear();
+        db.execSQL("CREATE TABLE " + HoursRestaurantContract.HoursDinersEntry.TABLE_NAME + " ("
+                + HoursRestaurantContract.HoursDinersEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + HoursRestaurantContract.HoursDinersEntry.DIA + " TEXT NOT NULL,"
+                + HoursRestaurantContract.HoursDinersEntry.HORA + " TEXT NOT NULL,"
+                + HoursRestaurantContract.HoursDinersEntry.ID_RESTAURANTE + " INTEGER NOT NULL,"
+                + HoursRestaurantContract.HoursDinersEntry.COMENSALES_DISPONIBLES + " INTEGER NOT NULL,"
+                + " FOREIGN KEY (" + HoursRestaurantContract.HoursDinersEntry.ID_RESTAURANTE + ") REFERENCES " + RestaurantContract.RestaurantEntry.TABLE_NAME + "(" + RestaurantContract.RestaurantEntry._ID + ")" + " ON UPDATE CASCADE"
+                + " )"
+        );
     }
 
     public User getUserByLogin(String login){
@@ -90,7 +108,7 @@ public class DbHelper extends SQLiteOpenHelper {
         if (c.getCount() == 1){
             c.moveToFirst();
             String name = c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.NAME));
-            SimpleDateFormat formatInauguracion = new SimpleDateFormat("YYYY-MM-DD");
+            SimpleDateFormat formatInauguracion = new SimpleDateFormat("DD-MM-YYYY");
             SimpleDateFormat formatHorario = new SimpleDateFormat("HH:MM");
             Date inauguracion = null;
             Date horarioApertura = null;
@@ -113,6 +131,7 @@ public class DbHelper extends SQLiteOpenHelper {
             String direccion = c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.DIRECCION));
             String chef = c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.CHEF));
             Restaurant r = new Restaurant(name, inauguracion, c.getInt(c.getColumnIndex(RestaurantContract.RestaurantEntry._ID)), direccion, chef, horarioApertura, horarioCierre);
+            c.close();
             return r;
         }
         else {
@@ -121,8 +140,18 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void setHourRestaurant(int id_restaurante, Date dia, Date hora){
+        String horaString = hora.getHours() + ":00";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("DD-MM-YYYY");
+        String diaString = dateFormat.format(dia);
+        // Cursor c = getWritableDatabase().query(HoursRestaurantContract.HoursDinersEntry.TABLE_NAME, null, );
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-
+        db.execSQL("DROP TABLE IF EXISTS " + UserContract.UserEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + RestaurantContract.RestaurantEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + HoursRestaurantContract.HoursDinersEntry.TABLE_NAME);
+        onCreate(db);
     }
 }

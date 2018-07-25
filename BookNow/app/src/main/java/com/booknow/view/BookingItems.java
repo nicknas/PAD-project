@@ -1,4 +1,4 @@
-package com.booknow;
+package com.booknow.view;
 
 public class BookingItems {
     public String missionName;

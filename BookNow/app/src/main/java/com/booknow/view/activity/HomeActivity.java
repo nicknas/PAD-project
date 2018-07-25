@@ -1,9 +1,11 @@
-package com.booknow;
+package com.booknow.view.activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
+
+import com.booknow.R;
 
 public class HomeActivity extends AppCompatActivity {
 

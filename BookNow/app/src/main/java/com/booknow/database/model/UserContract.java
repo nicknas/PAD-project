@@ -1,4 +1,4 @@
-package com.booknow.data;
+package com.booknow.database.model;
 
 import android.provider.BaseColumns;
 

@@ -1,15 +1,15 @@
-package com.booknow.data;
+package com.booknow.database.model;
 
 import java.util.Date;
 
-public class HoursDiners {
+public class HoursRestaurant {
     private Date dia;
     private Date hora;
     private int id;
     private int id_restaurante;
     private int comensales_disponibles;
 
-    public HoursDiners(Date dia, Date hora, int id, int id_restaurante, int comensales_disponibles){
+    public HoursRestaurant(Date dia, Date hora, int id, int id_restaurante, int comensales_disponibles){
         this.dia = new Date(dia.getTime());
         this.hora = new Date(hora.getTime());
         this.id = id;

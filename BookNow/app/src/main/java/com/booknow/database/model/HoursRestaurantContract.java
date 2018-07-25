@@ -1,8 +1,8 @@
-package com.booknow.data;
+package com.booknow.database.model;
 
 import android.provider.BaseColumns;
 
-public class HoursDinersContract {
+public class HoursRestaurantContract {
     public static abstract class HoursDinersEntry implements BaseColumns{
         public static final String TABLE_NAME = "HOURS_DINERS";
         public static final String DIA = "DIA";

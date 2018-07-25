@@ -1,9 +1,11 @@
-package com.booknow;
+package com.booknow.view.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class CreateBookStepOne extends AppCompatActivity {
+import com.booknow.R;
+
+public class CreateBookStepOneActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

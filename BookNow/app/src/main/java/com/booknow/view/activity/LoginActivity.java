@@ -1,4 +1,4 @@
-package com.booknow;
+package com.booknow.view.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -9,8 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
-import com.booknow.data.User;
-import com.booknow.data.DbHelper;
+import com.booknow.R;
+import com.booknow.database.model.User;
+import com.booknow.database.DatabaseHelper;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -24,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginButtonClick(View view){
         String login = ((EditText)findViewById(R.id.user_text)).getText().toString();
         String password = ((EditText)findViewById(R.id.password_text)).getText().toString();
-        DbHelper db = new DbHelper(this);
+        DatabaseHelper db = new DatabaseHelper(this);
         boolean isLogged = db.isUserLogged(login, password);
         if (isLogged){
             User u = db.getUserByLogin(login);
