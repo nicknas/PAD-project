@@ -1,9 +1,13 @@
-package com.booknow;
+package com.booknow.view.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
+import com.booknow.view.BookingItems;
+import com.booknow.view.BookingListAdapter;
+import com.booknow.R;
 
 import java.util.ArrayList;
 import java.util.List;
