@@ -3,7 +3,7 @@ package com.booknow.database.model;
 import android.provider.BaseColumns;
 
 public class HoursRestaurantContract {
-    public static abstract class HoursDinersEntry implements BaseColumns{
+    public static abstract class HoursRestaurantEntry implements BaseColumns{
         public static final String TABLE_NAME = "HOURS_DINERS";
         public static final String DIA = "DIA";
         public static final String HORA = "HORA";

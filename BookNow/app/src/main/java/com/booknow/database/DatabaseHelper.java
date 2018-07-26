@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.booknow.database.model.Booking;
+import com.booknow.database.model.BookingContract;
 import com.booknow.database.model.User;
 import com.booknow.database.model.HoursRestaurantContract;
 import com.booknow.database.model.Restaurant;
@@ -42,6 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(UserContract.UserEntry.EMAIL, "nalcaine@ucm.es");
         db.insert(UserContract.UserEntry.TABLE_NAME, null, values);
         values.clear();
+
         db.execSQL("CREATE TABLE " + RestaurantContract.RestaurantEntry.TABLE_NAME + " ("
                 + RestaurantContract.RestaurantEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + RestaurantContract.RestaurantEntry.NAME + " TEXT NOT NULL,"
@@ -52,6 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + RestaurantContract.RestaurantEntry.HORARIO_CIERRE + " TEXT NOT NULL"
                 + " )"
         );
+
         values.put(RestaurantContract.RestaurantEntry.NAME, "El Bulli");
         values.put(RestaurantContract.RestaurantEntry.INAUGURACION, "01-01-1962");
         values.put(RestaurantContract.RestaurantEntry.DIRECCION, "Ctra. de la Roca, s/n, 17480 Roses, Girona");
@@ -60,13 +64,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(RestaurantContract.RestaurantEntry.HORARIO_CIERRE, "23:45");
         db.insert(RestaurantContract.RestaurantEntry.TABLE_NAME, null, values);
         values.clear();
-        db.execSQL("CREATE TABLE " + HoursRestaurantContract.HoursDinersEntry.TABLE_NAME + " ("
-                + HoursRestaurantContract.HoursDinersEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + HoursRestaurantContract.HoursDinersEntry.DIA + " TEXT NOT NULL,"
-                + HoursRestaurantContract.HoursDinersEntry.HORA + " TEXT NOT NULL,"
-                + HoursRestaurantContract.HoursDinersEntry.ID_RESTAURANTE + " INTEGER NOT NULL,"
-                + HoursRestaurantContract.HoursDinersEntry.COMENSALES_DISPONIBLES + " INTEGER NOT NULL,"
-                + " FOREIGN KEY (" + HoursRestaurantContract.HoursDinersEntry.ID_RESTAURANTE + ") REFERENCES " + RestaurantContract.RestaurantEntry.TABLE_NAME + "(" + RestaurantContract.RestaurantEntry._ID + ")" + " ON UPDATE CASCADE"
+
+        db.execSQL("CREATE TABLE " + HoursRestaurantContract.HoursRestaurantEntry.TABLE_NAME + " ("
+                + HoursRestaurantContract.HoursRestaurantEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + HoursRestaurantContract.HoursRestaurantEntry.DIA + " TEXT NOT NULL,"
+                + HoursRestaurantContract.HoursRestaurantEntry.HORA + " TEXT NOT NULL,"
+                + HoursRestaurantContract.HoursRestaurantEntry.ID_RESTAURANTE + " INTEGER NOT NULL,"
+                + HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES + " INTEGER NOT NULL,"
+                + " FOREIGN KEY (" + HoursRestaurantContract.HoursRestaurantEntry.ID_RESTAURANTE + ") REFERENCES " + RestaurantContract.RestaurantEntry.TABLE_NAME + "(" + RestaurantContract.RestaurantEntry._ID + ")" + " ON UPDATE CASCADE"
+                + " )"
+        );
+
+        db.execSQL("CREATE TABLE " + BookingContract.BookingEntry.TABLE_NAME + " ("
+                + BookingContract.BookingEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+                + BookingContract.BookingEntry.DIA + " TEXT NOT NULL,"
+                + BookingContract.BookingEntry.HORA + " TEXT NOT NULL,"
+                + BookingContract.BookingEntry.NOMBRE_RESERVA + " TEXT NOT NULL,"
+                + BookingContract.BookingEntry.NUM_COMENSALES + " INTEGER NOT NULL,"
+                + BookingContract.BookingEntry.ID_USUARIO + " INTEGER NOT NULL,"
+                + " FOREIGN KEY (" + BookingContract.BookingEntry.ID_USUARIO + ") REFERENCES " + UserContract.UserEntry.TABLE_NAME + "(" + UserContract.UserEntry._ID + ")" + " ON UPDATE CASCADE"
                 + " )"
         );
     }
@@ -140,18 +156,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void setHourRestaurant(int id_restaurante, Date dia, Date hora){
+    public void setHourRestaurant(int id_restaurante, Date dia, Date hora, int comensales){
         String horaString = hora.getHours() + ":00";
         SimpleDateFormat dateFormat = new SimpleDateFormat("DD-MM-YYYY");
         String diaString = dateFormat.format(dia);
-        // Cursor c = getWritableDatabase().query(HoursRestaurantContract.HoursDinersEntry.TABLE_NAME, null, );
+        Cursor c = getWritableDatabase().query(HoursRestaurantContract.HoursRestaurantEntry.TABLE_NAME, null,
+                HoursRestaurantContract.HoursRestaurantEntry.ID_RESTAURANTE + "= ? AND " + HoursRestaurantContract.HoursRestaurantEntry.DIA + " LIKE ? AND "
+                + HoursRestaurantContract.HoursRestaurantEntry.HORA + " LIKE ?", new String[]{Integer.toString(id_restaurante), diaString, horaString},
+                null, null, null);
+        ContentValues values = new ContentValues();
+        if (c.getCount() == 0 || c == null){
+            values.put(HoursRestaurantContract.HoursRestaurantEntry.ID_RESTAURANTE, id_restaurante);
+            values.put(HoursRestaurantContract.HoursRestaurantEntry.DIA, diaString);
+            values.put(HoursRestaurantContract.HoursRestaurantEntry.HORA, horaString);
+            values.put(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES, 14);
+            getWritableDatabase().insert(HoursRestaurantContract.HoursRestaurantEntry.TABLE_NAME, null, values);
+        }
+        else{
+            c.moveToFirst();
+            if (c.getCount() == 1){
+                values.put(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES, c.getInt(c.getColumnIndex(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES)) - comensales);
+                int rows = getWritableDatabase().update(HoursRestaurantContract.HoursRestaurantEntry.TABLE_NAME, values,
+                        HoursRestaurantContract.HoursRestaurantEntry.ID_RESTAURANTE + "= ? AND "
+                                + HoursRestaurantContract.HoursRestaurantEntry.DIA + " LIKE ? AND "
+                        + HoursRestaurantContract.HoursRestaurantEntry.HORA + " LIKE ?", new String[]{Integer.toString(id_restaurante), diaString, horaString});
+
+            }
+        }
+    }
+
+    public Booking getBookingById(int idBooking){
+        Booking b = null;
+
+        return b;
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         db.execSQL("DROP TABLE IF EXISTS " + UserContract.UserEntry.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + RestaurantContract.RestaurantEntry.TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + HoursRestaurantContract.HoursDinersEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + HoursRestaurantContract.HoursRestaurantEntry.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + BookingContract.BookingEntry.TABLE_NAME);
         onCreate(db);
     }
 }
