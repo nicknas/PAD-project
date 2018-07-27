@@ -10,14 +10,31 @@ public class Booking {
     private int numComensales;
     private int id;
     private int idUsuario;
+    private boolean isPending;
+    private boolean isAccepted;
+    private int idRestaurante;
 
-    public Booking(Date dia, Date hora, String nombreReserva, int numComensales, int id, int idUsuario){
+    public Booking(Date dia, Date hora, String nombreReserva, int numComensales, int id, int idUsuario, int idRestaurante){
         this.dia = new Date(dia.getTime());
         this.hora = new Date(hora.getTime());
         this.nombreReserva = new String (nombreReserva);
         this.numComensales = numComensales;
         this.id = id;
         this.idUsuario = idUsuario;
+        this.isAccepted = false;
+        this.isPending = true;
+        this.idRestaurante = idRestaurante;
+    }
+
+    public Booking(Date dia, Date hora, String nombreReserva, int numComensales, int id, int idUsuario, boolean isPending, boolean isAccepted){
+        this.dia = new Date(dia.getTime());
+        this.hora = new Date(hora.getTime());
+        this.nombreReserva = new String (nombreReserva);
+        this.numComensales = numComensales;
+        this.id = id;
+        this.idUsuario = idUsuario;
+        this.isAccepted = isAccepted;
+        this.isPending = isPending;
     }
 
     public Date getDia() {
@@ -66,5 +83,29 @@ public class Booking {
 
     public void setIdUsuario(int idUsuario) {
         this.idUsuario = idUsuario;
+    }
+
+    public Boolean getIsPending() {
+        return isPending;
+    }
+
+    public void setIsPending(Boolean pending) {
+        isPending = pending;
+    }
+
+    public Boolean getIsAccepted() {
+        return isAccepted;
+    }
+
+    public void setIsAccepted(Boolean accepted) {
+        isAccepted = accepted;
+    }
+
+    public int getIdRestaurante() {
+        return idRestaurante;
+    }
+
+    public void setIdRestaurante(int idRestaurante) {
+        this.idRestaurante = idRestaurante;
     }
 }

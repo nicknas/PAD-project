@@ -82,6 +82,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + BookingContract.BookingEntry.NOMBRE_RESERVA + " TEXT NOT NULL,"
                 + BookingContract.BookingEntry.NUM_COMENSALES + " INTEGER NOT NULL,"
                 + BookingContract.BookingEntry.ID_USUARIO + " INTEGER NOT NULL,"
+                + BookingContract.BookingEntry.IS_ACCEPTED + " INTEGER NOT NULL,"
+                + BookingContract.BookingEntry.IS_PENDING + " INTEGER NOT NULL,"
                 + " FOREIGN KEY (" + BookingContract.BookingEntry.ID_USUARIO + ") REFERENCES " + UserContract.UserEntry.TABLE_NAME + "(" + UserContract.UserEntry._ID + ")" + " ON UPDATE CASCADE"
                 + " )"
         );
@@ -125,7 +127,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             c.moveToFirst();
             String name = c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.NAME));
             SimpleDateFormat formatInauguracion = new SimpleDateFormat("DD-MM-YYYY");
-            SimpleDateFormat formatHorario = new SimpleDateFormat("HH:MM");
+            SimpleDateFormat formatHorario = new SimpleDateFormat("HH:mm");
             Date inauguracion = null;
             Date horarioApertura = null;
             Date horarioCierre = null;
@@ -158,7 +160,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void setHourRestaurant(int id_restaurante, Date dia, Date hora, int comensales){
         String horaString = hora.getHours() + ":00";
-        SimpleDateFormat dateFormat = new SimpleDateFormat("DD-MM-YYYY");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD");
         String diaString = dateFormat.format(dia);
         Cursor c = getWritableDatabase().query(HoursRestaurantContract.HoursRestaurantEntry.TABLE_NAME, null,
                 HoursRestaurantContract.HoursRestaurantEntry.ID_RESTAURANTE + "= ? AND " + HoursRestaurantContract.HoursRestaurantEntry.DIA + " LIKE ? AND "
@@ -187,8 +189,67 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Booking getBookingById(int idBooking){
         Booking b = null;
+        Cursor c = getReadableDatabase().query(BookingContract.BookingEntry.TABLE_NAME, null,
+                BookingContract.BookingEntry._ID + " = ?", new String[]{Integer.toString(idBooking)},
+                null, null, null);
+        if (c.getCount() == 1){
+            c.moveToFirst();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD");
+            SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
+            Date dia = new Date();
+            Date hora = new Date();
+            try {
+                dia = dateFormat.parse(c.getString(c.getColumnIndex(BookingContract.BookingEntry.DIA)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            try {
+                hora = hourFormat.parse(c.getString(c.getColumnIndex(BookingContract.BookingEntry.HORA)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            String nombreReserva = c.getString(c.getColumnIndex(BookingContract.BookingEntry.NOMBRE_RESERVA));
+            int numComensales = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.NUM_COMENSALES));
+            int id = c.getInt(c.getColumnIndex(BookingContract.BookingEntry._ID));
+            int idUsuario = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.ID_USUARIO));
+            boolean isPending = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.IS_PENDING)) == 1 ? true : false;
+            boolean isAccepted = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.IS_ACCEPTED)) == 1 ? true : false;
 
+            b = new Booking(dia, hora, nombreReserva, numComensales, id, idUsuario, isPending, isAccepted);
+        }
+        c.close();
         return b;
+    }
+
+    public Cursor getAllBookings(int idUsuario){
+        Cursor c = getWritableDatabase().query(BookingContract.BookingEntry.TABLE_NAME, null,
+                BookingContract.BookingEntry.ID_USUARIO + " = ?", new String[]{Integer.toString(idUsuario)},
+                null, null, BookingContract.BookingEntry.DIA + " DESC");
+        return c;
+    }
+
+    public Cursor getPendingBookings(int idUsuario){
+        Cursor c = getWritableDatabase().query(BookingContract.BookingEntry.TABLE_NAME, null,
+                BookingContract.BookingEntry.ID_USUARIO + " = ? AND "
+                        + BookingContract.BookingEntry.IS_PENDING + " = 1", new String[]{Integer.toString(idUsuario)},
+                null, null, BookingContract.BookingEntry.DIA + " DESC");
+        return c;
+    }
+
+    public void createNewBooking(Date dia, Date hora, String nombreReserva, int numComensales, int idUsuario, boolean isPending, boolean isAccepted){
+
+        ContentValues values = new ContentValues();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD");
+        SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
+        values.put(BookingContract.BookingEntry.DIA, dateFormat.format(dia));
+        values.put(BookingContract.BookingEntry.HORA, hourFormat.format(hora));
+        values.put(BookingContract.BookingEntry.NOMBRE_RESERVA, nombreReserva);
+        values.put(BookingContract.BookingEntry.NUM_COMENSALES, numComensales);
+        values.put(BookingContract.BookingEntry.ID_USUARIO, idUsuario);
+        values.put(BookingContract.BookingEntry.IS_PENDING, isPending);
+        values.put(BookingContract.BookingEntry.IS_ACCEPTED, isAccepted);
+        getWritableDatabase().insert(BookingContract.BookingEntry.TABLE_NAME, null, values);
+
     }
 
     @Override
