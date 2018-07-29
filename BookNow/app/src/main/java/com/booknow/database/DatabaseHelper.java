@@ -84,7 +84,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + BookingContract.BookingEntry.ID_USUARIO + " INTEGER NOT NULL,"
                 + BookingContract.BookingEntry.IS_ACCEPTED + " INTEGER NOT NULL,"
                 + BookingContract.BookingEntry.IS_PENDING + " INTEGER NOT NULL,"
-                + " FOREIGN KEY (" + BookingContract.BookingEntry.ID_USUARIO + ") REFERENCES " + UserContract.UserEntry.TABLE_NAME + "(" + UserContract.UserEntry._ID + ")" + " ON UPDATE CASCADE"
+                + BookingContract.BookingEntry.ID_RESTAURANTE + " INTEGER NOT NULL,"
+                + " FOREIGN KEY (" + BookingContract.BookingEntry.ID_USUARIO + ") REFERENCES " + UserContract.UserEntry.TABLE_NAME + "(" + UserContract.UserEntry._ID + ")" + " ON UPDATE CASCADE,"
+                + " FOREIGN KEY (" + BookingContract.BookingEntry.ID_RESTAURANTE + ") REFERENCES " + RestaurantContract.RestaurantEntry.TABLE_NAME + "(" + RestaurantContract.RestaurantEntry._ID + ")" + " ON UPDATE CASCADE"
                 + " )"
         );
     }
@@ -158,7 +160,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void setHourRestaurant(int id_restaurante, Date dia, Date hora, int comensales){
+    public boolean setHourRestaurant(int id_restaurante, Date dia, Date hora, int comensales){
+        boolean isDinersAvailable = true;
         String horaString = hora.getHours() + ":00";
         SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD");
         String diaString = dateFormat.format(dia);
@@ -177,14 +180,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         else{
             c.moveToFirst();
             if (c.getCount() == 1){
-                values.put(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES, c.getInt(c.getColumnIndex(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES)) - comensales);
-                int rows = getWritableDatabase().update(HoursRestaurantContract.HoursRestaurantEntry.TABLE_NAME, values,
-                        HoursRestaurantContract.HoursRestaurantEntry.ID_RESTAURANTE + "= ? AND "
-                                + HoursRestaurantContract.HoursRestaurantEntry.DIA + " LIKE ? AND "
-                        + HoursRestaurantContract.HoursRestaurantEntry.HORA + " LIKE ?", new String[]{Integer.toString(id_restaurante), diaString, horaString});
-
+                if (c.getInt(c.getColumnIndex(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES)) - comensales < 0){
+                    isDinersAvailable = false;
+                }
+                else {
+                    values.put(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES, c.getInt(c.getColumnIndex(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES)) - comensales);
+                    int rows = getWritableDatabase().update(HoursRestaurantContract.HoursRestaurantEntry.TABLE_NAME, values,
+                            HoursRestaurantContract.HoursRestaurantEntry.ID_RESTAURANTE + "= ? AND "
+                                    + HoursRestaurantContract.HoursRestaurantEntry.DIA + " LIKE ? AND "
+                                    + HoursRestaurantContract.HoursRestaurantEntry.HORA + " LIKE ?", new String[]{Integer.toString(id_restaurante), diaString, horaString});
+                }
             }
         }
+        return isDinersAvailable;
     }
 
     public Booking getBookingById(int idBooking){
@@ -214,8 +222,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int idUsuario = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.ID_USUARIO));
             boolean isPending = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.IS_PENDING)) == 1 ? true : false;
             boolean isAccepted = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.IS_ACCEPTED)) == 1 ? true : false;
+            int idRestaurante = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.ID_RESTAURANTE));
 
-            b = new Booking(dia, hora, nombreReserva, numComensales, id, idUsuario, isPending, isAccepted);
+            b = new Booking(dia, hora, nombreReserva, numComensales, id, idUsuario, isPending, isAccepted, idRestaurante);
         }
         c.close();
         return b;
@@ -236,19 +245,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return c;
     }
 
-    public void createNewBooking(Date dia, Date hora, String nombreReserva, int numComensales, int idUsuario, boolean isPending, boolean isAccepted){
+    public void createNewBooking(Date dia, Date hora, String nombreReserva, int numComensales,
+                                 int idUsuario, int idRestaurante) throws Exception{
 
-        ContentValues values = new ContentValues();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD");
-        SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
-        values.put(BookingContract.BookingEntry.DIA, dateFormat.format(dia));
-        values.put(BookingContract.BookingEntry.HORA, hourFormat.format(hora));
-        values.put(BookingContract.BookingEntry.NOMBRE_RESERVA, nombreReserva);
-        values.put(BookingContract.BookingEntry.NUM_COMENSALES, numComensales);
-        values.put(BookingContract.BookingEntry.ID_USUARIO, idUsuario);
-        values.put(BookingContract.BookingEntry.IS_PENDING, isPending);
-        values.put(BookingContract.BookingEntry.IS_ACCEPTED, isAccepted);
-        getWritableDatabase().insert(BookingContract.BookingEntry.TABLE_NAME, null, values);
+        boolean isDinersAvailable = setHourRestaurant(idRestaurante, dia, hora, numComensales);
+        if (isDinersAvailable){
+            ContentValues values = new ContentValues();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD");
+            SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
+            values.put(BookingContract.BookingEntry.DIA, dateFormat.format(dia));
+            values.put(BookingContract.BookingEntry.HORA, hourFormat.format(hora));
+            values.put(BookingContract.BookingEntry.NOMBRE_RESERVA, nombreReserva);
+            values.put(BookingContract.BookingEntry.NUM_COMENSALES, numComensales);
+            values.put(BookingContract.BookingEntry.ID_USUARIO, idUsuario);
+            values.put(BookingContract.BookingEntry.IS_PENDING, 1);
+            values.put(BookingContract.BookingEntry.IS_ACCEPTED, 0);
+            getWritableDatabase().insert(BookingContract.BookingEntry.TABLE_NAME, null, values);
+        }
+        else{
+            throw new Exception("There is no diners available in this hour");
+        }
 
     }
 

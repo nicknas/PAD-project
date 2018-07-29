@@ -26,7 +26,7 @@ public class Booking {
         this.idRestaurante = idRestaurante;
     }
 
-    public Booking(Date dia, Date hora, String nombreReserva, int numComensales, int id, int idUsuario, boolean isPending, boolean isAccepted){
+    public Booking(Date dia, Date hora, String nombreReserva, int numComensales, int id, int idUsuario, boolean isPending, boolean isAccepted, int idRestaurante){
         this.dia = new Date(dia.getTime());
         this.hora = new Date(hora.getTime());
         this.nombreReserva = new String (nombreReserva);
@@ -35,6 +35,7 @@ public class Booking {
         this.idUsuario = idUsuario;
         this.isAccepted = isAccepted;
         this.isPending = isPending;
+        this.idRestaurante = idRestaurante;
     }
 
     public Date getDia() {
@@ -85,19 +86,19 @@ public class Booking {
         this.idUsuario = idUsuario;
     }
 
-    public Boolean getIsPending() {
+    public boolean getIsPending() {
         return isPending;
     }
 
-    public void setIsPending(Boolean pending) {
+    public void setIsPending(boolean pending) {
         isPending = pending;
     }
 
-    public Boolean getIsAccepted() {
+    public boolean getIsAccepted() {
         return isAccepted;
     }
 
-    public void setIsAccepted(Boolean accepted) {
+    public void setIsAccepted(boolean accepted) {
         isAccepted = accepted;
     }
 

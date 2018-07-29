@@ -12,5 +12,6 @@ public class BookingContract {
         public static final String ID_USUARIO = "ID_USUARIO";
         public static final String IS_PENDING = "IS_PENDING";
         public static final String IS_ACCEPTED = "IS_ACCEPTED";
+        public static final String ID_RESTAURANTE = "ID_RESTAURANTE";
     }
 }
