@@ -3,6 +3,7 @@ package com.booknow.view.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import com.booknow.R;
@@ -16,5 +17,11 @@ public class HomeActivity extends AppCompatActivity {
         Intent intent = getIntent();
         TextView welcomeText = (TextView)findViewById(R.id.username);
         welcomeText.setText(intent.getStringExtra("login"));
+    }
+
+    public void onManageExperiencesClick(View view){
+        Intent i = new Intent(this, ManageExperiencesActivity.class);
+        startActivity(i);
+
     }
 }

@@ -4,12 +4,14 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.activity.LoginActivity" android:theme="@style/AppTheme.NoActionBar">
+        <activity
+            android:name=".view.activity.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -20,8 +22,8 @@
         <activity android:name=".view.activity.ManageExperiencesActivity" />
         <activity android:name=".view.activity.PendingBookingActivity" />
         <activity android:name=".view.activity.CreateBookStepOneActivity" />
-        <activity android:name=".view.activity.CreateBookStepTwoActivity"/>
-        <activity android:name=".view.activity.CreateBookStepThreeActivity"></activity>
+        <activity android:name=".view.activity.CreateBookStepTwoActivity" />
+        <activity android:name=".view.activity.CreateBookStepThreeActivity" />
     </application>
 
 </manifest>

@@ -193,11 +193,12 @@
         app:layout_constraintGuide_percent="0.8" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/manage_exp_button"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/gestionar_experiencias"
         android:gravity="center|start"
+        android:onClick="onManageExperiencesClick"
         android:paddingLeft="10dp"
         android:text="@string/manage_experiences_literal"
         android:visibility="visible"
