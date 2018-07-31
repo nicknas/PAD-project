@@ -160,6 +160,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean isRestaurantAvailable(String restaurantName){
+        Cursor c = getReadableDatabase().query(RestaurantContract.RestaurantEntry.TABLE_NAME,
+                new String[]{RestaurantContract.RestaurantEntry.NAME},
+                RestaurantContract.RestaurantEntry.NAME + " LIKE ?", new String[]{restaurantName},
+                null, null, null);
+        if (c.getCount() == 0 || c == null){
+            c.close();
+            return false;
+        }
+        else{
+            c.close();
+            return true;
+        }
+    }
+
     public boolean setHourRestaurant(int id_restaurante, Date dia, Date hora, int comensales){
         boolean isDinersAvailable = true;
         String horaString = hora.getHours() + ":00";
