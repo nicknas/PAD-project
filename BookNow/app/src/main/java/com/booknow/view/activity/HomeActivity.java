@@ -1,6 +1,7 @@
 package com.booknow.view.activity;
 
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +15,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle("Home");
         Intent intent = getIntent();
         TextView welcomeText = (TextView)findViewById(R.id.username);
         welcomeText.setText(intent.getStringExtra("login"));
@@ -23,5 +26,10 @@ public class HomeActivity extends AppCompatActivity {
         Intent i = new Intent(this, ManageExperiencesActivity.class);
         startActivity(i);
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        return;
     }
 }

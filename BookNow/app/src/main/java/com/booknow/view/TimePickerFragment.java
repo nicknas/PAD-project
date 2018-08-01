@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.app.DialogFragment;
-import android.app.Fragment;
 import java.util.Calendar;
 
 import android.text.format.DateFormat;
@@ -15,16 +14,11 @@ import android.widget.TimePicker;
 
 import com.booknow.R;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
-
 
     public TimePickerFragment() {
 
     }
-
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -38,6 +32,8 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-
+        Button hourButton = getActivity().findViewById(R.id.hour_booking_button);
+        String horaString = String.format("%02d:%02d", hourOfDay, minute);
+        hourButton.setText(horaString);
     }
 }
