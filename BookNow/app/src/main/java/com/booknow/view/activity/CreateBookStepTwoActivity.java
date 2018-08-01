@@ -23,7 +23,7 @@ public class CreateBookStepTwoActivity extends AppCompatActivity {
         actionBar.setTitle("Step Two");
         Calendar c = Calendar.getInstance();
         Button hourButton = findViewById(R.id.hour_booking_button);
-        hourButton.setText(c.get(Calendar.HOUR_OF_DAY) + ":" + c.get(Calendar.MINUTE));
+        hourButton.setText(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
         Button dateButton = findViewById(R.id.date_booking_button);
         dateButton.setText(c.get(Calendar.DAY_OF_MONTH) + "/" + (c.get(Calendar.MONTH) + 1) + "/" + c.get(Calendar.YEAR));
     }
