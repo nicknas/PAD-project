@@ -17,6 +17,7 @@ public class PendingBookingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_pending_booking);
         RecyclerView rv = findViewById(R.id.rv);
         rv.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -25,6 +26,5 @@ public class PendingBookingActivity extends AppCompatActivity {
         bookingList.add(new BookingItems("Misión 1", "6/05/2018", "14:00 - 15:00", "2 comensales"));
         bookingList.add(new BookingItems("Misión 1", "6/05/2018", "18:00 - 19:00", "5 comensales"));
         BookingListAdapter adapter = new BookingListAdapter(bookingList);
-        setContentView(R.layout.activity_pending_booking);
     }
 }

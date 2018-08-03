@@ -5,7 +5,11 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.app.DialogFragment;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import android.text.format.DateFormat;
 import android.widget.Button;
@@ -22,11 +26,19 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Calendar c = Calendar.getInstance();
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        int minute = c.get(Calendar.MINUTE);
-        return new TimePickerDialog(getActivity(), this, hour, minute,
+        Button hourButton = getActivity().findViewById(R.id.hour_booking_button);
+        SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
+
+        Date date = new Date();
+        try {
+            date = hourFormat.parse(hourButton.getText().toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        TimePickerDialog t = new TimePickerDialog(getActivity(), this, date.getHours(), date.getMinutes(),
                 DateFormat.is24HourFormat(getActivity()));
+        t.setTitle("Set hour");
+        return t;
 
     }
 

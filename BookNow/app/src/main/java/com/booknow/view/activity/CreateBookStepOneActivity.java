@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 
 import com.booknow.R;
 import com.booknow.database.DatabaseHelper;
@@ -45,13 +46,15 @@ public class CreateBookStepOneActivity extends AppCompatActivity {
 
     public void onAddRequisitesClick(View view){
         AutoCompleteTextView textView = findViewById(R.id.restaurant_name_text_view);
+        EditText bookingNameTextView = findViewById(R.id.booking_name_text_view);
         DatabaseHelper db = new DatabaseHelper(this);
-        if (db.isRestaurantAvailable(textView.getText().toString())){
+        if (db.isRestaurantAvailable(textView.getText().toString()) && bookingNameTextView.getText().length() != 0){
             Intent i = new Intent(this, CreateBookStepTwoActivity.class);
             i.putExtra("restaurantName", textView.getText().toString());
+            i.putExtra("bookingName", bookingNameTextView.getText().toString());
             startActivity(i);
         }
-        else{
+        else if (!db.isRestaurantAvailable(textView.getText().toString())){
             AlertDialog.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
@@ -65,7 +68,24 @@ public class CreateBookStepOneActivity extends AppCompatActivity {
 
                         }
                     })
-                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+        else {
+            AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
+            } else {
+                builder = new AlertDialog.Builder(this);
+            }
+            builder.setTitle("Empty name")
+                    .setMessage("The name of the booking is empty")
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
                     .show();
         }
     }

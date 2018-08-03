@@ -12,12 +12,13 @@ public class Restaurant {
     private String name;
     private Date inauguracion;
     private int id;
+    private int comensalesHora;
     private String direccion;
     private String chef;
     private Date horarioApertura;
     private Date horarioCierre;
 
-    public Restaurant(String name, Date inauguracion, int id, String direccion, String chef, Date horarioApertura, Date horarioCierre){
+    public Restaurant(String name, Date inauguracion, int id, String direccion, String chef, Date horarioApertura, Date horarioCierre, int comensalesHora){
         this.name = name;
         this.inauguracion = new Date(inauguracion.getTime());
         this.id = id;
@@ -25,6 +26,7 @@ public class Restaurant {
         this.chef = chef;
         this.horarioApertura = new Date(horarioApertura.getTime());
         this.horarioCierre = new Date(horarioCierre.getTime());
+        this.comensalesHora = comensalesHora;
     }
 
     public String getName() {
@@ -81,6 +83,14 @@ public class Restaurant {
 
     public void setHorarioCierre(Date horarioCierre) {
         this.horarioCierre = horarioCierre;
+    }
+
+    public int getComensalesHora() {
+        return comensalesHora;
+    }
+
+    public void setComensalesHora(int comensalesHora) {
+        this.comensalesHora = comensalesHora;
     }
 
 }

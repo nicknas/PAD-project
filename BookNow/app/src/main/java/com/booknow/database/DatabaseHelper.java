@@ -14,13 +14,15 @@ import com.booknow.database.model.Restaurant;
 import com.booknow.database.model.RestaurantContract;
 import com.booknow.database.model.UserContract;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String DATABASE_NAME = "BookNow.db";
 
     public DatabaseHelper(Context context){
@@ -52,12 +54,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + RestaurantContract.RestaurantEntry.DIRECCION + " TEXT NOT NULL,"
                 + RestaurantContract.RestaurantEntry.CHEF + " TEXT,"
                 + RestaurantContract.RestaurantEntry.HORARIO_APERTURA + " TEXT NOT NULL,"
-                + RestaurantContract.RestaurantEntry.HORARIO_CIERRE + " TEXT NOT NULL"
+                + RestaurantContract.RestaurantEntry.HORARIO_CIERRE + " TEXT NOT NULL,"
+                + RestaurantContract.RestaurantEntry.COMENSALES_HORA + " INTEGER NOT NULL"
                 + " )"
         );
 
         values.put(RestaurantContract.RestaurantEntry.NAME, "El Bulli");
-        values.put(RestaurantContract.RestaurantEntry.INAUGURACION, "01-01-1962");
+        values.put(RestaurantContract.RestaurantEntry.INAUGURACION, "01/01/1962");
         values.put(RestaurantContract.RestaurantEntry.DIRECCION, "Ctra. de la Roca, s/n, 17480 Roses, Girona");
         values.put(RestaurantContract.RestaurantEntry.CHEF, "Ferran Adrià");
         values.put(RestaurantContract.RestaurantEntry.HORARIO_APERTURA, "13:00");
@@ -112,10 +115,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             c.close();
             return true;
         }
-        else {
-            c.close();
-            return false;
-        }
+        c.close();
+        return false;
     }
 
     public Cursor getAllRestaurants(){
@@ -128,7 +129,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (c.getCount() == 1){
             c.moveToFirst();
             String name = c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.NAME));
-            SimpleDateFormat formatInauguracion = new SimpleDateFormat("DD-MM-YYYY");
+            SimpleDateFormat formatInauguracion = new SimpleDateFormat("dd/MM/yyyy");
             SimpleDateFormat formatHorario = new SimpleDateFormat("HH:mm");
             Date inauguracion = null;
             Date horarioApertura = null;
@@ -150,7 +151,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             String direccion = c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.DIRECCION));
             String chef = c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.CHEF));
-            Restaurant r = new Restaurant(name, inauguracion, c.getInt(c.getColumnIndex(RestaurantContract.RestaurantEntry._ID)), direccion, chef, horarioApertura, horarioCierre);
+            int comensalesHora = c.getInt(c.getColumnIndex(RestaurantContract.RestaurantEntry.COMENSALES_HORA));
+            Restaurant r = new Restaurant(name, inauguracion, c.getInt(c.getColumnIndex(RestaurantContract.RestaurantEntry._ID)), direccion, chef, horarioApertura, horarioCierre, comensalesHora);
+            c.close();
+            return r;
+        }
+        else {
+            c.close();
+            return null;
+        }
+    }
+
+    public Restaurant getRestaurantByName(String restaurantName){
+        Cursor c = getWritableDatabase().query(RestaurantContract.RestaurantEntry.TABLE_NAME, null, RestaurantContract.RestaurantEntry.NAME + " LIKE ?", new String[]{restaurantName}, null, null, null);
+        if (c.getCount() == 1){
+            c.moveToFirst();
+            String name = c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.NAME));
+            SimpleDateFormat formatInauguracion = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat formatHorario = new SimpleDateFormat("HH:mm");
+            Date inauguracion = null;
+            Date horarioApertura = null;
+            Date horarioCierre = null;
+            try {
+                inauguracion = formatInauguracion.parse(c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.INAUGURACION)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            try {
+                horarioApertura = formatHorario.parse(c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.HORARIO_APERTURA)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            try {
+                horarioCierre = formatHorario.parse(c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.HORARIO_CIERRE)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            String direccion = c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.DIRECCION));
+            String chef = c.getString(c.getColumnIndex(RestaurantContract.RestaurantEntry.CHEF));
+            int comensalesHora = c.getInt(c.getColumnIndex(RestaurantContract.RestaurantEntry.COMENSALES_HORA));
+            Restaurant r = new Restaurant(name, inauguracion, c.getInt(c.getColumnIndex(RestaurantContract.RestaurantEntry._ID)), direccion, chef, horarioApertura, horarioCierre, comensalesHora);
             c.close();
             return r;
         }
@@ -178,7 +218,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean setHourRestaurant(int id_restaurante, Date dia, Date hora, int comensales){
         boolean isDinersAvailable = true;
         String horaString = hora.getHours() + ":00";
-        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         String diaString = dateFormat.format(dia);
         Cursor c = getWritableDatabase().query(HoursRestaurantContract.HoursRestaurantEntry.TABLE_NAME, null,
                 HoursRestaurantContract.HoursRestaurantEntry.ID_RESTAURANTE + "= ? AND " + HoursRestaurantContract.HoursRestaurantEntry.DIA + " LIKE ? AND "
@@ -189,7 +229,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(HoursRestaurantContract.HoursRestaurantEntry.ID_RESTAURANTE, id_restaurante);
             values.put(HoursRestaurantContract.HoursRestaurantEntry.DIA, diaString);
             values.put(HoursRestaurantContract.HoursRestaurantEntry.HORA, horaString);
-            values.put(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES, 14);
+            values.put(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES, 14 - comensales);
             getWritableDatabase().insert(HoursRestaurantContract.HoursRestaurantEntry.TABLE_NAME, null, values);
         }
         else{
@@ -210,6 +250,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return isDinersAvailable;
     }
 
+    public boolean isHourBookingAvailable(Date hour, int idRestaurante){
+        boolean available = true;
+        Restaurant r = getRestaurantById(idRestaurante);
+        if (hour.after(r.getHorarioCierre()) || hour.before(r.getHorarioApertura())){
+            available = false;
+        }
+        return available;
+    }
+
     public Booking getBookingById(int idBooking){
         Booking b = null;
         Cursor c = getReadableDatabase().query(BookingContract.BookingEntry.TABLE_NAME, null,
@@ -217,7 +266,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null, null, null);
         if (c.getCount() == 1){
             c.moveToFirst();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
             Date dia = new Date();
             Date hora = new Date();
@@ -262,25 +311,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void createNewBooking(Date dia, Date hora, String nombreReserva, int numComensales,
                                  int idUsuario, int idRestaurante) throws Exception{
+        boolean isHourAvailable = isHourBookingAvailable(hora, idRestaurante);
+        if (isHourAvailable){
+            boolean isDinersAvailable = setHourRestaurant(idRestaurante, dia, hora, numComensales);
+            if (isDinersAvailable){
+                ContentValues values = new ContentValues();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
+                values.put(BookingContract.BookingEntry.DIA, dateFormat.format(dia));
+                values.put(BookingContract.BookingEntry.HORA, hourFormat.format(hora));
+                values.put(BookingContract.BookingEntry.NOMBRE_RESERVA, nombreReserva);
+                values.put(BookingContract.BookingEntry.NUM_COMENSALES, numComensales);
+                values.put(BookingContract.BookingEntry.ID_USUARIO, idUsuario);
+                values.put(BookingContract.BookingEntry.IS_PENDING, 1);
+                values.put(BookingContract.BookingEntry.IS_ACCEPTED, 0);
+                values.put(BookingContract.BookingEntry.ID_RESTAURANTE, idRestaurante);
+                getWritableDatabase().insert(BookingContract.BookingEntry.TABLE_NAME, null, values);
+            }
+            else {
+                throw new Exception("There is no diners available in this hour");
+            }
 
-        boolean isDinersAvailable = setHourRestaurant(idRestaurante, dia, hora, numComensales);
-        if (isDinersAvailable){
-            ContentValues values = new ContentValues();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD");
-            SimpleDateFormat hourFormat = new SimpleDateFormat("HH:mm");
-            values.put(BookingContract.BookingEntry.DIA, dateFormat.format(dia));
-            values.put(BookingContract.BookingEntry.HORA, hourFormat.format(hora));
-            values.put(BookingContract.BookingEntry.NOMBRE_RESERVA, nombreReserva);
-            values.put(BookingContract.BookingEntry.NUM_COMENSALES, numComensales);
-            values.put(BookingContract.BookingEntry.ID_USUARIO, idUsuario);
-            values.put(BookingContract.BookingEntry.IS_PENDING, 1);
-            values.put(BookingContract.BookingEntry.IS_ACCEPTED, 0);
-            getWritableDatabase().insert(BookingContract.BookingEntry.TABLE_NAME, null, values);
-        }
-        else{
-            throw new Exception("There is no diners available in this hour");
         }
 
+        else {
+            throw new Exception("The restaurant is not open in this hour");
+        }
     }
 
     @Override
