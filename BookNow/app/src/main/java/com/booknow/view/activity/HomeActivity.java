@@ -1,6 +1,7 @@
 package com.booknow.view.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,9 +18,9 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Home");
-        Intent intent = getIntent();
-        TextView welcomeText = (TextView)findViewById(R.id.username);
-        welcomeText.setText(intent.getStringExtra("login"));
+        TextView welcomeText = findViewById(R.id.username);
+        SharedPreferences shared = getSharedPreferences("booknow", 0);
+        welcomeText.setText(shared.getString("login", "default"));
     }
 
     public void onManageExperiencesClick(View view){

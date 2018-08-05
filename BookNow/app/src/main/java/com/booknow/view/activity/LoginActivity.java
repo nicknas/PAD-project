@@ -3,6 +3,7 @@ package com.booknow.view.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +21,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        SharedPreferences shared = getSharedPreferences("booknow", 0);
+        if (shared.contains("login") && shared.contains("password")){
+            Intent i = new Intent(this, HomeActivity.class);
+            startActivity(i);
+        }
     }
 
     public void onLoginButtonClick(View view){
@@ -29,8 +35,12 @@ public class LoginActivity extends AppCompatActivity {
         boolean isLogged = db.isUserLogged(login, password);
         if (isLogged){
             User u = db.getUserByLogin(login);
+            SharedPreferences shared = getSharedPreferences("booknow", 0);
+            SharedPreferences.Editor editor = shared.edit();
+            editor.putString("login", u.getLogin());
+            editor.putString("password", u.getPassword());
+            editor.commit();
             Intent intent = new Intent(this, HomeActivity.class);
-            intent.putExtra("login", u.getLogin());
             startActivity(intent);
         }
         else{

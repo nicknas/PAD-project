@@ -9,7 +9,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 
 import com.booknow.R;
 import com.booknow.database.DatabaseHelper;
@@ -41,6 +43,11 @@ public class CreateBookStepTwoActivity extends AppCompatActivity {
         hourButton.setText(String.format("%02d:%02d", c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)));
         Button dateButton = findViewById(R.id.date_booking_button);
         dateButton.setText(c.get(Calendar.DAY_OF_MONTH) + "/" + (c.get(Calendar.MONTH) + 1) + "/" + c.get(Calendar.YEAR));
+        Spinner dinersSpinner = findViewById(R.id.dinersSpinner);
+        String[] dinersArray = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, dinersArray);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dinersSpinner.setAdapter(adapter);
     }
 
     public void onShowTimePickerDialog(View view){
@@ -55,49 +62,17 @@ public class CreateBookStepTwoActivity extends AppCompatActivity {
     }
 
     public void onGoToStepThreeClick(View view){
-        DatabaseHelper db = new DatabaseHelper(this);
-        Restaurant r = db.getRestaurantByName(restaurantName);
+
         Button dateButton = findViewById(R.id.date_booking_button);
         Button hourButton = findViewById(R.id.hour_booking_button);
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        DateFormat hourFormat = new SimpleDateFormat("HH:mm");
-        Calendar date = Calendar.getInstance();
-        Calendar hour = Calendar.getInstance();
-        try {
-            date.setTime(dateFormat.parse(dateButton.getText().toString()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        try {
-            hour.setTime(hourFormat.parse(hourButton.getText().toString()));
-        } catch (ParseException e){
-            e.printStackTrace();
-        }
-        try {
-            db.createNewBooking(date.getTime(), hour.getTime(), bookingName, 5, 1, r.getId());
-            Intent i = new Intent(this, CreateBookStepThreeActivity.class);
-            i.putExtra("restaurantName", restaurantName);
-            i.putExtra("bookingName", bookingName);
-            i.putExtra("numDiners", 5);
-            i.putExtra("date", dateButton.getText().toString());
-            i.putExtra("hour", hourButton.getText().toString());
-            startActivity(i);
-        } catch (Exception e) {
-            AlertDialog.Builder builder;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-            } else {
-                builder = new AlertDialog.Builder(this);
-            }
-            builder.setTitle("Error")
-                    .setMessage(e.getMessage())
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+        Spinner dinersSpinner = findViewById(R.id.dinersSpinner);
+        Intent i = new Intent(this, CreateBookStepThreeActivity.class);
+        i.putExtra("restaurantName", restaurantName);
+        i.putExtra("bookingName", bookingName);
+        i.putExtra("numDiners", Integer.parseInt((String)dinersSpinner.getSelectedItem()));
+        i.putExtra("date", dateButton.getText().toString());
+        i.putExtra("hour", hourButton.getText().toString());
+        startActivity(i);
 
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-        }
     }
 }

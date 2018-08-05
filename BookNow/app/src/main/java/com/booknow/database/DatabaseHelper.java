@@ -65,6 +65,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(RestaurantContract.RestaurantEntry.CHEF, "Ferran Adrià");
         values.put(RestaurantContract.RestaurantEntry.HORARIO_APERTURA, "13:00");
         values.put(RestaurantContract.RestaurantEntry.HORARIO_CIERRE, "23:45");
+        values.put(RestaurantContract.RestaurantEntry.COMENSALES_HORA, 20);
         db.insert(RestaurantContract.RestaurantEntry.TABLE_NAME, null, values);
         values.clear();
 
@@ -226,10 +227,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null, null, null);
         ContentValues values = new ContentValues();
         if (c.getCount() == 0 || c == null){
+            Cursor cursor = getWritableDatabase().query(RestaurantContract.RestaurantEntry.TABLE_NAME, new String[]{RestaurantContract.RestaurantEntry.COMENSALES_HORA},
+                    RestaurantContract.RestaurantEntry._ID + " = ?", new String[]{Integer.toString(id_restaurante)},
+                    null, null, null);
+            cursor.moveToFirst();
             values.put(HoursRestaurantContract.HoursRestaurantEntry.ID_RESTAURANTE, id_restaurante);
             values.put(HoursRestaurantContract.HoursRestaurantEntry.DIA, diaString);
             values.put(HoursRestaurantContract.HoursRestaurantEntry.HORA, horaString);
-            values.put(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES, 14 - comensales);
+            values.put(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES,
+                    cursor.getInt(cursor.getColumnIndex(RestaurantContract.RestaurantEntry.COMENSALES_HORA)) - comensales);
             getWritableDatabase().insert(HoursRestaurantContract.HoursRestaurantEntry.TABLE_NAME, null, values);
         }
         else{
@@ -247,6 +253,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 }
             }
         }
+        c.close();
         return isDinersAvailable;
     }
 

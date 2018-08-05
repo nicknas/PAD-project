@@ -78,16 +78,16 @@ public class CreateBookStepThreeActivity extends AppCompatActivity {
                 builder = new AlertDialog.Builder(this);
             }
             builder.setTitle("Success")
-                    .setMessage("The booking was created")
+                    .setMessage("The book was created")
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-
+                            Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+                            startActivity(i);
                         }
                     })
+                    .setCancelable(false)
                     .setIcon(android.R.drawable.ic_dialog_info)
                     .show();
-            Intent i = new Intent(this, HomeActivity.class);
-            startActivity(i);
         } catch (Exception e) {
             AlertDialog.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
