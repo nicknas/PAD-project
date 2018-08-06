@@ -12,6 +12,6 @@
     <string name="log_facebook_literal">login with facebook</string>
     <string name="search_restaurant_literal">Search restaurant</string>
     <string name="booking_literal">Bookings</string>
-    <string name="pending_booking_literal">Pending</string>
+    <string name="active_booking_literal">Active</string>
     <string name="closed_booking_literal">Closed</string>
 </resources>

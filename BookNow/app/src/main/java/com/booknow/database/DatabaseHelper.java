@@ -22,7 +22,7 @@ import java.util.Date;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "BookNow.db";
 
     public DatabaseHelper(Context context){
@@ -86,8 +86,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + BookingContract.BookingEntry.NOMBRE_RESERVA + " TEXT NOT NULL,"
                 + BookingContract.BookingEntry.NUM_COMENSALES + " INTEGER NOT NULL,"
                 + BookingContract.BookingEntry.ID_USUARIO + " INTEGER NOT NULL,"
-                + BookingContract.BookingEntry.IS_ACCEPTED + " INTEGER NOT NULL,"
-                + BookingContract.BookingEntry.IS_PENDING + " INTEGER NOT NULL,"
+                + BookingContract.BookingEntry.IS_ACTIVE + " INTEGER NOT NULL,"
                 + BookingContract.BookingEntry.ID_RESTAURANTE + " INTEGER NOT NULL,"
                 + " FOREIGN KEY (" + BookingContract.BookingEntry.ID_USUARIO + ") REFERENCES " + UserContract.UserEntry.TABLE_NAME + "(" + UserContract.UserEntry._ID + ")" + " ON UPDATE CASCADE,"
                 + " FOREIGN KEY (" + BookingContract.BookingEntry.ID_RESTAURANTE + ") REFERENCES " + RestaurantContract.RestaurantEntry.TABLE_NAME + "(" + RestaurantContract.RestaurantEntry._ID + ")" + " ON UPDATE CASCADE"
@@ -291,11 +290,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int numComensales = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.NUM_COMENSALES));
             int id = c.getInt(c.getColumnIndex(BookingContract.BookingEntry._ID));
             int idUsuario = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.ID_USUARIO));
-            boolean isPending = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.IS_PENDING)) == 1 ? true : false;
-            boolean isAccepted = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.IS_ACCEPTED)) == 1 ? true : false;
+            boolean isActive = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.IS_ACTIVE)) == 1 ? true : false;
             int idRestaurante = c.getInt(c.getColumnIndex(BookingContract.BookingEntry.ID_RESTAURANTE));
 
-            b = new Booking(dia, hora, nombreReserva, numComensales, id, idUsuario, isPending, isAccepted, idRestaurante);
+            b = new Booking(dia, hora, nombreReserva, numComensales, id, idUsuario, isActive,idRestaurante);
         }
         c.close();
         return b;
@@ -308,10 +306,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return c;
     }
 
-    public Cursor getPendingBookings(int idUsuario){
+    public Cursor getActiveBookings(int idUsuario){
         Cursor c = getWritableDatabase().query(BookingContract.BookingEntry.TABLE_NAME, null,
                 BookingContract.BookingEntry.ID_USUARIO + " = ? AND "
-                        + BookingContract.BookingEntry.IS_PENDING + " = 1", new String[]{Integer.toString(idUsuario)},
+                        + BookingContract.BookingEntry.IS_ACTIVE + " = 1", new String[]{Integer.toString(idUsuario)},
+                null, null, BookingContract.BookingEntry.DIA + " DESC");
+        return c;
+    }
+
+    public Cursor getClosedBookings(int idUsuario){
+        Cursor c = getWritableDatabase().query(BookingContract.BookingEntry.TABLE_NAME, null,
+                BookingContract.BookingEntry.ID_USUARIO + " = ? AND "
+                        + BookingContract.BookingEntry.IS_ACTIVE + " = 0", new String[]{Integer.toString(idUsuario)},
                 null, null, BookingContract.BookingEntry.DIA + " DESC");
         return c;
     }
@@ -330,8 +336,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 values.put(BookingContract.BookingEntry.NOMBRE_RESERVA, nombreReserva);
                 values.put(BookingContract.BookingEntry.NUM_COMENSALES, numComensales);
                 values.put(BookingContract.BookingEntry.ID_USUARIO, idUsuario);
-                values.put(BookingContract.BookingEntry.IS_PENDING, 1);
-                values.put(BookingContract.BookingEntry.IS_ACCEPTED, 0);
+                values.put(BookingContract.BookingEntry.IS_ACTIVE, 1);
                 values.put(BookingContract.BookingEntry.ID_RESTAURANTE, idRestaurante);
                 getWritableDatabase().insert(BookingContract.BookingEntry.TABLE_NAME, null, values);
             }

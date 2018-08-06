@@ -24,7 +24,8 @@ public class BookingListAdapter extends RecyclerView.Adapter<BookingListAdapter.
     @Override
     public void onBindViewHolder(@NonNull BookingViewHolder holder, int position) {
         holder.dateBooking.setText(bookings.get(position).dateBooking);
-        holder.missionName.setText(bookings.get(position).missionName);
+        holder.bookingName.setText(bookings.get(position).bookingName);
+        holder.restaurantName.setText(bookings.get(position).restaurantName);
         holder.numDiners.setText(bookings.get(position).numDiners);
         holder.hourBooking.setText(bookings.get(position).hourBooking);
     }
@@ -39,25 +40,28 @@ public class BookingListAdapter extends RecyclerView.Adapter<BookingListAdapter.
         return bookings.size();
     }
 
-    public List<BookingItems> bookings;
+    public List<BookingListItem> bookings;
 
-    public BookingListAdapter(List<BookingItems> bookings){
+    public BookingListAdapter(List<BookingListItem> bookings){
         this.bookings = bookings;
     }
 
     public static class BookingViewHolder extends RecyclerView.ViewHolder{
         public CardView cv;
-        public TextView missionName;
+        public TextView bookingName;
+        public TextView restaurantName;
         public TextView dateBooking;
         public TextView hourBooking;
         public TextView numDiners;
         BookingViewHolder(View itemView) {
             super(itemView);
             cv = itemView.findViewById(R.id.cv);
-            missionName = itemView.findViewById(R.id.mission_name);
+            bookingName = itemView.findViewById(R.id.mission_name);
+            restaurantName = itemView.findViewById(R.id.restaurant_name);
             dateBooking = itemView.findViewById(R.id.date_booking);
             hourBooking =  itemView.findViewById(R.id.hour_booking);
             numDiners = itemView.findViewById(R.id.num_diners_booking);
         }
+
     }
 }

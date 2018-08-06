@@ -33,7 +33,7 @@ public class CreateBookStepThreeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_book_step_three);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Step three");
+        actionBar.setTitle("Step Three");
         Intent i = getIntent();
         restaurantName = i.getStringExtra("restaurantName");
         bookingName = i.getStringExtra("bookingName");

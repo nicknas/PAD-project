@@ -13,6 +13,6 @@
     <string name="log_facebook_literal">login con facebook</string>
     <string name="search_restaurant_literal">Buscar restaurante</string>
     <string name="booking_literal">Reservas</string>
-    <string name="pending_booking_literal">Pendientes</string>
+    <string name="active_booking_literal">Activas</string>
     <string name="closed_booking_literal">Cerradas</string>
 </resources>
