@@ -49,8 +49,8 @@ public class ActiveBookingActivity extends AppCompatActivity {
             @Override
             public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
                 View view = rv.findChildViewUnder(e.getX(), e.getY());
-                TextView restaurantNameText = view.findViewById(R.id.restaurant_name);
-                System.out.println(restaurantNameText.getText());
+                TextView bookingNameText = view.findViewById(R.id.mission_name);
+                System.out.println(bookingNameText.getText());
                 Intent i = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(i);
                 return true;
