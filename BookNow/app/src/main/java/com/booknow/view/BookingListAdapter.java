@@ -1,5 +1,6 @@
 package com.booknow.view;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.booknow.R;
+import com.booknow.view.activity.HomeActivity;
 
 import java.util.List;
 
@@ -28,6 +30,16 @@ public class BookingListAdapter extends RecyclerView.Adapter<BookingListAdapter.
         holder.restaurantName.setText(bookings.get(position).restaurantName);
         holder.numDiners.setText(bookings.get(position).numDiners);
         holder.hourBooking.setText(bookings.get(position).hourBooking);
+        holder.itemView.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                TextView bookingNameText = v.findViewById(R.id.mission_name);
+                System.out.println(bookingNameText.getText());
+                Intent i = new Intent(v.getContext(), HomeActivity.class);
+                v.getContext().startActivity(i);
+            }
+        });
     }
 
     @Override

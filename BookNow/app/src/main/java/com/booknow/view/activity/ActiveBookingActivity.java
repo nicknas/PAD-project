@@ -45,26 +45,5 @@ public class ActiveBookingActivity extends AppCompatActivity {
         c.close();
         BookingListAdapter adapter = new BookingListAdapter(bookingList);
         rv.setAdapter(adapter);
-        rv.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                View view = rv.findChildViewUnder(e.getX(), e.getY());
-                TextView bookingNameText = view.findViewById(R.id.mission_name);
-                System.out.println(bookingNameText.getText());
-                Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-                startActivity(i);
-                return true;
-            }
-
-            @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-            }
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-            }
-        });
     }
 }
