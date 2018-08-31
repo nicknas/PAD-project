@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.booknow.R;
 import com.booknow.view.activity.HomeActivity;
+import com.booknow.view.activity.SummaryBookingActivity;
 
 import java.util.List;
 
@@ -34,9 +35,18 @@ public class BookingListAdapter extends RecyclerView.Adapter<BookingListAdapter.
 
             @Override
             public void onClick(View v) {
+
                 TextView bookingNameText = v.findViewById(R.id.mission_name);
+                TextView numDinersText = v.findViewById(R.id.num_diners_booking);
+                TextView dateBookingText = v.findViewById(R.id.date_booking);
+                TextView hourBookingText = v.findViewById(R.id.hour_booking);
                 System.out.println(bookingNameText.getText());
-                Intent i = new Intent(v.getContext(), HomeActivity.class);
+                Intent i = new Intent(v.getContext(), SummaryBookingActivity.class);
+                i.putExtra("restaurantName", ((TextView)v.findViewById(R.id.restaurant_name)).getText().toString());
+                i.putExtra("bookingName", bookingNameText.getText().toString());
+                i.putExtra("numDiners", Integer.parseInt(numDinersText.getText().toString()));
+                i.putExtra("date", dateBookingText.getText().toString());
+                i.putExtra("hour", hourBookingText.getText().toString());
                 v.getContext().startActivity(i);
             }
         });
