@@ -2,6 +2,7 @@ package com.booknow.view;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,7 +26,7 @@ public class BookingListAdapter extends RecyclerView.Adapter<BookingListAdapter.
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BookingViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull BookingViewHolder holder, final int position) {
         holder.dateBooking.setText(bookings.get(position).dateBooking);
         holder.bookingName.setText(bookings.get(position).bookingName);
         holder.restaurantName.setText(bookings.get(position).restaurantName);
@@ -35,7 +36,6 @@ public class BookingListAdapter extends RecyclerView.Adapter<BookingListAdapter.
 
             @Override
             public void onClick(View v) {
-
                 TextView bookingNameText = v.findViewById(R.id.mission_name);
                 TextView numDinersText = v.findViewById(R.id.num_diners_booking);
                 TextView dateBookingText = v.findViewById(R.id.date_booking);
@@ -44,10 +44,13 @@ public class BookingListAdapter extends RecyclerView.Adapter<BookingListAdapter.
                 Intent i = new Intent(v.getContext(), SummaryBookingActivity.class);
                 i.putExtra("restaurantName", ((TextView)v.findViewById(R.id.restaurant_name)).getText().toString());
                 i.putExtra("bookingName", bookingNameText.getText().toString());
-                i.putExtra("numDiners", Integer.parseInt(numDinersText.getText().toString()));
+                i.putExtra("numDiners", Integer.parseInt(numDinersText.getText().toString().split(" comensales")[0]));
                 i.putExtra("date", dateBookingText.getText().toString());
                 i.putExtra("hour", hourBookingText.getText().toString());
+                i.putExtra("id", bookings.get(position).id);
+                i.putExtra("idRestaurante", bookings.get(position).idRestaurant);
                 v.getContext().startActivity(i);
+                ((AppCompatActivity)v.getContext()).finish();
             }
         });
     }
@@ -62,7 +65,7 @@ public class BookingListAdapter extends RecyclerView.Adapter<BookingListAdapter.
         return bookings.size();
     }
 
-    public List<BookingListItem> bookings;
+    private List<BookingListItem> bookings;
 
     public BookingListAdapter(List<BookingListItem> bookings){
         this.bookings = bookings;

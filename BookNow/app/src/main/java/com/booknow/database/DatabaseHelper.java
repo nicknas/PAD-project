@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.booknow.database.model.Booking;
 import com.booknow.database.model.BookingContract;
+import com.booknow.database.model.HoursRestaurant;
 import com.booknow.database.model.User;
 import com.booknow.database.model.HoursRestaurantContract;
 import com.booknow.database.model.Restaurant;
@@ -297,6 +298,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         c.close();
         return b;
+    }
+
+    public void deleteBookingById(int id, int numDiners, String date, Date hour, int idRestaurante){
+        String hourString = hour.getHours() + ":00";
+        Cursor c = this.getWritableDatabase().query(HoursRestaurantContract.HoursRestaurantEntry.TABLE_NAME, null,
+                HoursRestaurantContract.HoursRestaurantEntry.ID_RESTAURANTE + " = ? AND " +
+                         HoursRestaurantContract.HoursRestaurantEntry.DIA + " LIKE ? AND " +
+                         HoursRestaurantContract.HoursRestaurantEntry.HORA + " LIKE ?", new String[]{Integer.toString(idRestaurante), date, hourString},
+                         null, null, null);
+        c.moveToNext();
+        ContentValues values = new ContentValues();
+        values.put(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES, c.getInt(c.getColumnIndex(HoursRestaurantContract.HoursRestaurantEntry.COMENSALES_DISPONIBLES)) + numDiners);
+        c.close();
+        int ok = this.getWritableDatabase().update(HoursRestaurantContract.HoursRestaurantEntry.TABLE_NAME, values,
+                                       HoursRestaurantContract.HoursRestaurantEntry.ID_RESTAURANTE + " = ? AND " +
+                                                   HoursRestaurantContract.HoursRestaurantEntry.DIA + " LIKE ? AND " +
+                                                   HoursRestaurantContract.HoursRestaurantEntry.HORA + " LIKE ?", new String[]{Integer.toString(idRestaurante), date, hourString});
+        this.getWritableDatabase().delete(BookingContract.BookingEntry.TABLE_NAME,
+                              BookingContract.BookingEntry._ID + " = ?", new String[]{Integer.toString(id)});
+
     }
 
     public Cursor getAllBookings(int idUsuario){

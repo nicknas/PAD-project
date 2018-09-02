@@ -37,13 +37,21 @@ public class ActiveBookingActivity extends AppCompatActivity {
         List<BookingListItem> bookingList = new ArrayList<>();
         while (c.moveToNext()){
             Restaurant r = db.getRestaurantById(c.getInt(c.getColumnIndex(BookingContract.BookingEntry.ID_RESTAURANTE)));
-            bookingList.add(new BookingListItem(c.getString(c.getColumnIndex(BookingContract.BookingEntry.NOMBRE_RESERVA)),
+            bookingList.add(new BookingListItem(c.getInt(c.getColumnIndex(BookingContract.BookingEntry._ID)), c.getString(c.getColumnIndex(BookingContract.BookingEntry.NOMBRE_RESERVA)),
                     r.getName(), c.getString(c.getColumnIndex(BookingContract.BookingEntry.DIA)),
                     c.getString(c.getColumnIndex(BookingContract.BookingEntry.HORA)),
-                    c.getString(c.getColumnIndex(BookingContract.BookingEntry.NUM_COMENSALES)) + " comensales"));
+                    c.getString(c.getColumnIndex(BookingContract.BookingEntry.NUM_COMENSALES)) + " comensales",
+                    r.getId()));
         }
         c.close();
         BookingListAdapter adapter = new BookingListAdapter(bookingList);
         rv.setAdapter(adapter);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent i = new Intent(this, ManageExperiencesActivity.class);
+        startActivity(i);
+        finish();
     }
 }

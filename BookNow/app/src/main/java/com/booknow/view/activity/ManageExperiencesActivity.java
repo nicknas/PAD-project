@@ -27,4 +27,11 @@ public class ManageExperiencesActivity extends AppCompatActivity {
         Intent i = new Intent(this, ActiveBookingActivity.class);
         startActivity(i);
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent i = new Intent(this, HomeActivity.class);
+        startActivity(i);
+        finish();
+    }
 }

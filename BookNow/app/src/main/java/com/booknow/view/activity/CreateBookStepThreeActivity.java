@@ -81,8 +81,9 @@ public class CreateBookStepThreeActivity extends AppCompatActivity {
                     .setMessage("The book was created")
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+                            Intent i = new Intent(getApplicationContext(), ActiveBookingActivity.class);
                             startActivity(i);
+                            finish();
                         }
                     })
                     .setCancelable(false)
