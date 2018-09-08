@@ -50,7 +50,6 @@ public class BookingListAdapter extends RecyclerView.Adapter<BookingListAdapter.
                 i.putExtra("id", bookings.get(position).id);
                 i.putExtra("idRestaurante", bookings.get(position).idRestaurant);
                 v.getContext().startActivity(i);
-                ((AppCompatActivity)v.getContext()).finish();
             }
         });
     }
